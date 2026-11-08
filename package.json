@@ -1,0 +1,11 @@
+{
+  "name": "bookmark-manager-extension",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "test": "node --test tests/*.test.js",
+    "check": "for f in extension/*.js extension/lib/*.js; do node --check \"$f\" || exit 1; done && node -e \"JSON.parse(require('fs').readFileSync('extension/manifest.json'))\" && echo OK",
+    "package": "cd extension && zip -r ../bookmark-manager.zip . -x '.*'"
+  }
+}

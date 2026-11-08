@@ -1,0 +1,41 @@
+body { width: 440px; max-height: 580px; display: flex; flex-direction: column; overflow: hidden; }
+
+.current {
+  display: flex; align-items: center; gap: 8px; padding: 10px 12px;
+  border-bottom: 1px solid var(--border); background: var(--bg-2); min-height: 48px;
+}
+.current .star { font-size: 18px; color: var(--fg-3); }
+.current .star.on { color: #f2b01e; }
+.current .cur-text { flex: 1; min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; color: var(--fg-2); }
+.current .addbtn { flex: 1; display: flex; justify-content: space-between; align-items: center; text-align: left; }
+.current form { flex: 1; display: grid; grid-template-columns: 1fr auto; gap: 6px; }
+.current form input[name='title'] { grid-column: 1 / -1; }
+.current .msg { grid-column: 1 / -1; margin: 0; font-size: 12px; }
+
+.searchbar { padding: 10px 12px 6px; }
+.searchbar input { width: 100%; font-size: 15px; padding: 8px 10px; }
+
+.results { overflow-y: auto; flex: 1; padding: 0 6px 6px; }
+.item {
+  display: grid; grid-template-columns: 16px 1fr auto auto; gap: 2px 10px; align-items: center;
+  padding: 7px 8px; border-radius: 6px; cursor: pointer; border-left: 3px solid transparent;
+}
+.item:hover { background: var(--bg-2); }
+.item.cursor { background: var(--cursor); border-left-color: var(--cursor-edge); }
+.item .title { font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.item .used { font-size: 12px; color: var(--fg-3); white-space: nowrap; }
+.item .sub { grid-column: 2 / 4; display: flex; gap: 6px; align-items: center; min-width: 0; font-size: 12px; }
+.item .url { color: var(--fg-3); overflow: hidden; text-overflow: ellipsis; white-space: nowrap; flex: 1; min-width: 0; }
+.item .chip { font-size: 11px; line-height: 16px; cursor: default; }
+
+.empty { text-align: center; color: var(--fg-3); padding: 20px; margin: 0; }
+
+.hints {
+  display: flex; flex-wrap: wrap; gap: 4px 12px; align-items: center; padding: 8px 12px;
+  border-top: 1px solid var(--border); font-size: 11px; color: var(--fg-3);
+}
+.hints .link { margin-left: auto; font-size: 12px; }
+
+.item .edit { grid-column: 4; grid-row: 1 / span 2; background: none; border: 1px solid transparent; padding: 2px 7px; color: var(--fg-3); opacity: 0; }
+.item:hover .edit, .item.cursor .edit { opacity: 1; }
+.item .edit:hover { color: var(--accent); background: var(--accent-soft); border-color: var(--border); }

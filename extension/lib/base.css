@@ -1,0 +1,92 @@
+:root {
+  color-scheme: light dark;
+  --bg: #ffffff;
+  --bg-2: #f5f6f8;
+  --bg-3: #eaecf0;
+  --fg: #1d2129;
+  --fg-2: #586070;
+  --fg-3: #8a92a1;
+  --border: #e1e4ea;
+  --accent: #2f6bed;
+  --accent-fg: #ffffff;
+  --accent-soft: #e7eefd;
+  --cursor: #eef3ff;
+  --cursor-edge: #2f6bed;
+  --danger: #d33a3a;
+  --warn: #a8690f;
+  --ok: #2b8a57;
+  --chip: #eef0f4;
+  --shadow: 0 10px 34px rgba(15, 23, 42, 0.2);
+  --font: system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --mono: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root {
+    --bg: #15171c;
+    --bg-2: #1c1f25;
+    --bg-3: #272b33;
+    --fg: #e6e8ec;
+    --fg-2: #a4abb8;
+    --fg-3: #747c8a;
+    --border: #2d323b;
+    --accent: #6d9cff;
+    --accent-fg: #0b1020;
+    --accent-soft: #1e2943;
+    --cursor: #1d2740;
+    --cursor-edge: #6d9cff;
+    --danger: #ff6f6f;
+    --warn: #e2a64b;
+    --ok: #5cc28a;
+    --chip: #272b33;
+    --shadow: 0 10px 34px rgba(0, 0, 0, 0.55);
+  }
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; background: var(--bg); color: var(--fg); font: 14px/1.4 var(--font); }
+[hidden] { display: none !important; }
+
+button {
+  font: inherit; color: inherit; background: var(--bg-2);
+  border: 1px solid var(--border); border-radius: 6px; padding: 5px 11px; cursor: pointer; white-space: nowrap;
+}
+button:hover { background: var(--bg-3); }
+button.primary { background: var(--accent); color: var(--accent-fg); border-color: transparent; font-weight: 600; }
+button.primary:hover { filter: brightness(1.08); }
+button.danger { color: var(--danger); }
+button.link { background: none; border: none; padding: 0; color: var(--accent); text-decoration: underline; }
+
+input, select, textarea {
+  font: inherit; color: inherit; background: var(--bg);
+  border: 1px solid var(--border); border-radius: 6px; padding: 6px 9px; min-width: 0;
+}
+input:focus-visible, select:focus-visible, button:focus-visible, a:focus-visible {
+  outline: 2px solid var(--accent); outline-offset: 1px;
+}
+input[type='checkbox'] { accent-color: var(--accent); }
+
+kbd {
+  font: 11px/1.5 var(--mono); background: var(--bg-2); color: var(--fg-2);
+  border: 1px solid var(--border); border-bottom-width: 2px; border-radius: 4px; padding: 0 5px;
+}
+
+.chip {
+  display: inline-block; font-size: 12px; line-height: 18px; padding: 0 7px; border-radius: 9px;
+  background: var(--chip); color: var(--fg-2); border: none; cursor: pointer;
+}
+.chip:hover { background: var(--accent-soft); color: var(--accent); }
+
+.fav { width: 16px; height: 16px; flex: none; border-radius: 3px; }
+.fav-blank { display: inline-block; background: var(--bg-3); }
+
+.toast {
+  position: fixed; left: 50%; bottom: 20px; transform: translateX(-50%); z-index: 100;
+  display: flex; gap: 14px; align-items: center; max-width: calc(100% - 32px);
+  background: var(--fg); color: var(--bg); padding: 9px 14px; border-radius: 8px; box-shadow: var(--shadow);
+}
+.toast-action { background: none; border: none; color: var(--accent-soft); font-weight: 700; padding: 0; }
+.toast-action:hover { background: none; text-decoration: underline; }
+
+.muted { color: var(--fg-3); }
+.error { color: var(--danger); margin: 0; min-height: 1em; }
+button.danger-bg { background: var(--danger); color: #fff; border-color: transparent; }

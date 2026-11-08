@@ -1,0 +1,200 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Bookmark Manager</title>
+  <link rel="icon" href="icons/icon32.png">
+  <link rel="stylesheet" href="lib/base.css">
+  <link rel="stylesheet" href="manager.css">
+</head>
+<body>
+  <header class="topbar">
+    <h1><img src="icons/icon32.png" alt="" width="22" height="22"> Bookmarks</h1>
+    <div class="search">
+      <input id="search" type="search" placeholder="Search name, URL or #tag…" autocomplete="off" spellcheck="false" aria-label="Search bookmarks" aria-controls="list">
+      <kbd class="search-kbd">/</kbd>
+    </div>
+    <label class="sort">Sort
+      <select id="sort" aria-label="Sort by">
+        <option value="lastUsed">Last used</option>
+        <option value="savedAt">Date saved</option>
+        <option value="title">Name</option>
+        <option value="url">URL</option>
+      </select>
+    </label>
+    <div class="tools">
+      <button id="btn-add" class="primary" title="New bookmark (N)">New</button>
+      <button id="btn-import" title="Import CSV or JSON (I)">Import</button>
+      <button id="btn-export" title="Export CSV or JSON (O)">Export</button>
+      <button id="btn-check" title="Find broken bookmarks (B)">Check links</button>
+      <button id="btn-help" title="Keyboard shortcuts and settings (?)" aria-label="Help">?</button>
+    </div>
+    <input type="file" id="file" accept=".csv,.json,text/csv,application/json" hidden>
+  </header>
+
+  <div class="layout">
+    <nav id="tags" class="sidebar" aria-label="Tag groups"></nav>
+    <main>
+      <div id="banner" class="banner" hidden>
+        <span>No “last used” dates yet. They’re recorded from now on — or fill them in from your browsing history.</span>
+        <button id="banner-fill" class="primary">Fill from history</button>
+        <button id="banner-dismiss">Dismiss</button>
+      </div>
+      <div id="bulkbar" class="bulkbar" hidden>
+        <span id="bulk-count"></span>
+        <button id="bulk-tag" title="T">Add tags</button>
+        <button id="bulk-untag">Remove tag</button>
+        <button id="bulk-delete" class="danger" title="Delete">Delete</button>
+        <button id="bulk-clear" title="Esc">Clear selection</button>
+      </div>
+      <div class="list-head" aria-hidden="true">
+        <span><input type="checkbox" id="select-all" tabindex="-1" title="Select all (Ctrl+A)"></span>
+        <button data-sort="title">Name</button>
+        <span>Tags</span>
+        <span>Folder</span>
+        <button data-sort="savedAt">Saved</button>
+        <button data-sort="lastUsed">Last used</button>
+        <span></span>
+      </div>
+      <div id="list" class="list" role="listbox" aria-multiselectable="true" aria-label="Bookmarks" tabindex="0"></div>
+      <p id="empty" class="empty" hidden></p>
+    </main>
+  </div>
+
+  <footer class="statusbar">
+    <span id="status"></span>
+    <span class="muted">Press <kbd>?</kbd> for keyboard shortcuts</span>
+  </footer>
+
+  <!-- Edit / new bookmark -->
+  <dialog id="edit">
+    <form id="edit-form" novalidate>
+      <h2 id="edit-heading">Edit bookmark</h2>
+      <label>Name <input name="title" autocomplete="off"></label>
+      <label>URL <input name="url" autocomplete="off" spellcheck="false"></label>
+      <label>Tags <input name="tags" autocomplete="off" placeholder="Comma separated, e.g. work, reading"></label>
+      <div id="tag-suggest" class="suggest" aria-label="Tag suggestions"></div>
+      <label>Folder <select name="folder"></select></label>
+      <div id="edit-dates" class="field-row">
+        <label>Saved <input type="datetime-local" name="savedAt"></label>
+        <label>Last used <input type="datetime-local" name="lastUsed"></label>
+      </div>
+      <p id="edit-meta" class="muted small">Clear “Saved” to use the date the browser recorded; clear “Last used” to mark it as never opened.</p>
+      <p id="edit-error" class="error" role="alert"></p>
+      <div class="actions">
+        <span class="muted small"><kbd>Tab</kbd> completes a tag</span>
+        <span class="spacer"></span>
+        <button type="button" id="edit-cancel">Cancel</button>
+        <button type="submit" class="primary">Save</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Generic confirm / prompt -->
+  <dialog id="ask">
+    <form id="ask-form">
+      <h2 id="ask-title"></h2>
+      <p id="ask-msg" class="pre"></p>
+      <input id="ask-input" autocomplete="off" hidden>
+      <div class="actions">
+        <span class="spacer"></span>
+        <button type="button" id="ask-cancel">Cancel</button>
+        <button type="submit" id="ask-ok" class="primary">OK</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Export -->
+  <dialog id="export">
+    <form id="export-form">
+      <h2>Export bookmarks</h2>
+      <fieldset>
+        <legend>Format</legend>
+        <label class="radio"><input type="radio" name="format" value="json" checked> JSON <span class="muted">— full fidelity, re-importable</span></label>
+        <label class="radio"><input type="radio" name="format" value="csv"> CSV <span class="muted">— opens in spreadsheets</span></label>
+      </fieldset>
+      <fieldset>
+        <legend>Bookmarks</legend>
+        <label class="radio"><input type="radio" name="scope" value="all" checked> <span id="export-all"></span></label>
+        <label class="radio"><input type="radio" name="scope" value="view"> <span id="export-view"></span></label>
+      </fieldset>
+      <div class="actions">
+        <span class="spacer"></span>
+        <button type="button" id="export-cancel">Cancel</button>
+        <button type="submit" class="primary">Download</button>
+      </div>
+    </form>
+  </dialog>
+
+  <!-- Broken link checker -->
+  <dialog id="check" class="wide">
+    <h2>Find broken bookmarks</h2>
+    <p id="check-status"></p>
+    <progress id="check-progress" value="0" max="1"></progress>
+    <div id="check-results" class="check-results"></div>
+    <p class="muted small">“Broken” = page not found or site unreachable (pre-selected). “Check” = may need a login, blocks automated checks, or was temporarily down.</p>
+    <div class="actions">
+      <button type="button" id="check-stop">Stop</button>
+      <span class="spacer"></span>
+      <button type="button" id="check-tag">Tag selected “broken”</button>
+      <button type="button" id="check-delete" class="danger">Delete selected</button>
+      <button type="button" id="check-close">Close</button>
+    </div>
+  </dialog>
+
+  <!-- Help -->
+  <dialog id="help" class="wide">
+    <h2>Keyboard shortcuts</h2>
+    <div class="help-grid">
+      <section>
+        <h3>Navigate</h3>
+        <dl>
+          <dt><kbd>/</kbd> <kbd>Ctrl</kbd>+<kbd>F</kbd></dt><dd>Search</dd>
+          <dt><kbd>↓</kbd> <kbd>j</kbd> / <kbd>↑</kbd> <kbd>k</kbd></dt><dd>Next / previous bookmark</dd>
+          <dt><kbd>PgDn</kbd> <kbd>PgUp</kbd> <kbd>Home</kbd> <kbd>End</kbd></dt><dd>Jump</dd>
+          <dt><kbd>[</kbd> <kbd>]</kbd></dt><dd>Previous / next tag group</dd>
+          <dt><kbd>Enter</kbd></dt><dd>Open in new tab</dd>
+          <dt><kbd>Shift</kbd>+<kbd>Enter</kbd></dt><dd>Open in background tab</dd>
+          <dt><kbd>s</kbd></dt><dd>Cycle sort order</dd>
+          <dt><kbd>Esc</kbd></dt><dd>Clear selection, tag filter, then search</dd>
+        </dl>
+      </section>
+      <section>
+        <h3>Edit</h3>
+        <dl>
+          <dt><kbd>n</kbd></dt><dd>New bookmark</dd>
+          <dt><kbd>e</kbd> <kbd>F2</kbd></dt><dd>Edit / rename</dd>
+          <dt><kbd>t</kbd></dt><dd>Tag (selected or current)</dd>
+          <dt><kbd>c</kbd></dt><dd>Copy URL</dd>
+          <dt><kbd>x</kbd> <kbd>Space</kbd></dt><dd>Select / deselect</dd>
+          <dt><kbd>Ctrl</kbd>+<kbd>A</kbd></dt><dd>Select all shown</dd>
+          <dt><kbd>Del</kbd></dt><dd>Delete</dd>
+          <dt><kbd>Ctrl</kbd>+<kbd>Z</kbd></dt><dd>Undo delete</dd>
+        </dl>
+      </section>
+      <section>
+        <h3>Tools</h3>
+        <dl>
+          <dt><kbd>i</kbd></dt><dd>Import CSV / JSON</dd>
+          <dt><kbd>o</kbd></dt><dd>Export CSV / JSON</dd>
+          <dt><kbd>b</kbd></dt><dd>Find broken bookmarks</dd>
+          <dt><kbd>?</kbd></dt><dd>This help</dd>
+        </dl>
+        <h3>Anywhere in the browser</h3>
+        <dl id="global-shortcuts"></dl>
+        <button type="button" id="help-shortcuts" class="link small">Change browser shortcuts</button>
+      </section>
+    </div>
+    <h3>Search syntax</h3>
+    <p class="small"><code>react hooks</code> all words · <code>#work</code> or <code>tag:work</code> tag · <code>title:</code> <code>url:</code> <code>folder:</code> one field · <code>-#done</code> exclude · <code>"exact phrase"</code></p>
+    <h3>Settings</h3>
+    <label class="radio"><input type="checkbox" id="set-dupes"> Block duplicate bookmarks everywhere (including the browser’s ☆ button)</label>
+    <p class="small muted">Tags and dates are also saved in the bookmarks folder <b>Bookmark Manager data</b> (under Other bookmarks), so they survive removing the extension and sync to your other devices with your bookmarks. The manager hides that folder — please don’t edit or delete it.</p>
+    <p><button type="button" id="help-history">Fill “last used” from browser history</button></p>
+    <div class="actions"><span class="spacer"></span><button type="button" id="help-close" class="primary">Close</button></div>
+  </dialog>
+
+  <script type="module" src="manager.js"></script>
+</body>
+</html>

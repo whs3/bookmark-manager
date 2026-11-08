@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>Bookmarks</title>
+  <link rel="stylesheet" href="lib/base.css">
+  <link rel="stylesheet" href="popup.css">
+</head>
+<body>
+  <section id="current" class="current"></section>
+  <div class="searchbar">
+    <input id="search" type="search" placeholder="Search name, URL or #tag" autocomplete="off" spellcheck="false" aria-label="Search bookmarks" aria-controls="results">
+  </div>
+  <div id="results" class="results" role="listbox" aria-label="Bookmarks"></div>
+  <p id="empty" class="empty" hidden></p>
+  <footer class="hints">
+    <span><kbd>↑</kbd><kbd>↓</kbd> move</span>
+    <span><kbd>Enter</kbd> open</span>
+    <span><kbd>Shift</kbd>+<kbd>Enter</kbd> here</span>
+    <span><kbd>Alt</kbd>+<kbd>A</kbd> add</span>
+    <span><kbd>Alt</kbd>+<kbd>E</kbd> edit</span>
+    <button id="open-manager" class="link" title="Alt+M">Manager</button>
+  </footer>
+  <script type="module" src="popup.js"></script>
+</body>
+</html>
