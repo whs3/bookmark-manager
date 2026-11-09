@@ -60,3 +60,7 @@ npm run package   # zip extension/ for the Chrome Web Store / AMO
 Layout: `extension/lib/core.js` (pure logic) · `lib/store.js` (bookmarks and storage) ·
 `lib/linkcheck.js` · `background.js` (last-used tracking, duplicate blocking, shortcuts) ·
 `popup.*` · `manager.*`
+
+## License
+
+MIT — see [LICENSE](LICENSE).
